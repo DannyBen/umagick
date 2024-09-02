@@ -73,4 +73,8 @@ if [[ $# -lt 1 || "$1" == "--help" || "$1" == "-h" ]]; then
 fi
 
 # Call the magick command with the arguments
-eval "$(magick_command "$@")"
+if [[ -n $DEBUG ]]; then
+  magick_command "$@"
+else
+  eval "$(magick_command "$@")"
+fi

@@ -1,0 +1,25 @@
+# run this with
+# umagick example/example.txt background=SkyBlue
+
+-size 400x400 xc:$background
+
+(
+  -size 400x400 xc:none
+  -fill red -draw 'rectangle 50,50 150,150' 
+)
+
+(
+  -size 400x400 xc:none
+  -fill none -stroke green
+  -strokewidth 5
+  -draw 'ellipse 200,200 80,50 0 360'
+)
+
+(
+  -size 400x400 xc:none
+  -fill blue
+  -draw 'circle 300,300 250,250' 
+)
+
+-layers merge +repage
+example/output.png
