@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+exit_with_usage() {
+  echo "Usage: umagick SCRIPT [key=value...] [ARGS...]"
+  echo
+  echo "  SCRIPT       Path to the ImageMagick script file."
+  echo "  [key=value]  Environment variables to set."
+  echo "  [ARGS]       Arguments to append to the magick command."
+  exit
+}
+
+magick_command() {
+  local script_file
+  local magick_command
+  local additional_args=()
+  local env_vars=()
+  local temp_script
+  local magick_command
+  
+  script_file="$1"
+  shift
+
+  # Parse additional arguments
+  while [[ $# -gt 0 ]]; do
+    if [[ "$1" =~ ^[^=]+=[^=]+$ ]]; then
+      env_vars+=("$1")
+    else
+      additional_args+=("$1")
+    fi
+    shift
+  done
+
+  if [[ ! -f "$script_file" ]]; then
+    echo "Script file not found!"
+    return 1
+  fi
+
+  temp_script=$(mktemp)
+
+  # Set environment variables
+  for var in "${env_vars[@]}"; do
+    export "${var?}"
+  done
+
+  # Read the script, process it, and apply envsubst
+  envsubst < "$script_file" | while IFS= read -r line; do
+    # Skip comments
+    [[ "$line" =~ ^# ]] && continue
+
+    # Escape parentheses for bash
+    line=$(echo "$line" | sed 's/(/\\(/g; s/)/\\)/g')
+    
+    # Add space between lines
+    echo -n "$line " >> "$temp_script"
+  done
+
+  # Remove the trailing space
+  sed -i 's/ $//' "$temp_script"
+
+  # Build the magick command with additional arguments
+  magick_command="magick $(cat "$temp_script") ${additional_args[*]}"
+
+  # Clean up
+  rm "$temp_script"
+
+  # Print the magick command
+  echo "$magick_command"
+}
+
+# Check for minimum arguments
+if [[ $# -lt 1 || "$1" == "--help" || "$1" == "-h" ]]; then
+  exit_with_usage
+fi
+
+# Call the magick command with the arguments
+eval "$(magick_command "$@")"
