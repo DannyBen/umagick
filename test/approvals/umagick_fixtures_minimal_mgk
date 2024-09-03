@@ -1,0 +1,3 @@
+Error: missing 'color'
+
+Usage: umagick fixtures/minimal.mgk color=* save=*

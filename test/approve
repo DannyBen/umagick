@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+cd ./test
+source approvals.bash
+tmpsave=tmp/out.jpg
+
+describe "basics"
+  approve "umagick"
+  approve "umagick --help"
+  approve "umagick --version"
+
+describe "script usage"
+  approve "umagick fixtures/minimal.mgk"
+  expect_exit_code 1
+
+describe "script execution"
+  rm -f "$tmpsave"
+  approve "umagick fixtures/minimal.mgk color=red save=$tmpsave && echo ok"
+  [[ -f "$tmpsave" ]] || fail "$tmpsave not created"
+
+describe "verbose script execution"
+  rm -f "$tmpsave"
+  approve "umagick fixtures/minimal.mgk -v color=red save=$tmpsave"
+  [[ -f "$tmpsave" ]] || fail "$tmpsave not created"
