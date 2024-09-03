@@ -21,4 +21,4 @@
 )
 
 -layers merge +repage
--write example/$save
+-write $save

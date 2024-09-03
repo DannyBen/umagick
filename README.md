@@ -21,17 +21,39 @@ Arguments:
   ARGS           key=value pairs to pass to the script.
 ```
 
+## Writing the scripts
+
+The scripts handled by µmagick are the same scripts you can use directly with
+the `magick -script` command, only with these differences:
+
+1. You can use bash `$variables`.
+2. You can specify a special comment at the beginning of the file to declare
+   what are the arguments this script expects to have.
+
 ## Example
 
-Running the [example script](example/script.mgk):
+Considering [this example script](examples/hello.mgk):
+
+```bash
+# examples/hello.mgk
+# params: color save
+
+-size 400x400 xc:$color
+-write $save
+```
+
+Running without arguments, will show the list of needed arguments as determined
+by the `params` comment:
 
 ```shell
-$ umagick example/script.mgk
-Error: missing 'background'
+$ umagick examples/hello.mgk
+Error: missing 'color'
 
-Usage: umagick example/script.mgk background=* save=*
+Usage: umagick examples/hello.mgk color=* save=*
+```
 
+Running with all arguments, will execute the cript:
 
-$ umagick example/script.mgk background=SkyBlue save=out.jpg
-# => Image saved
+```shell
+$ umagick examples/hello.mgk color=red save=out.jpg
 ```
