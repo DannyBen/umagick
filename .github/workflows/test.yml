@@ -12,6 +12,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Add current directory to path
       run: echo "$PWD" >> $GITHUB_PATH
+    - name: Install ImageMagick
+      run: sudo apt install imagemagick
     - name: Run shellcheck tests
       run: shellcheck umagick
     - name: Run approval tests
