@@ -1,5 +1,5 @@
-# run this with
-# umagick example/example.txt background=SkyBlue
+# asd
+# params: background size
 
 -size 400x400 xc:$background
 
@@ -22,4 +22,4 @@
 )
 
 -layers merge +repage
-example/output.png
+-write example/out.jpg
