@@ -1,6 +1,7 @@
-# µmagick - Tiny ImageMagick Wrapper
+# µmagick
 
-This wrapper lets you run ImageMagick scripts, with variable substitution.
+**µmagick** is a tiny ImageMagick Wrapper that lets you run ImageMagick scripts,
+with arguments.
 
 ## Usage
 
@@ -29,6 +30,7 @@ $ umagick example/script.mgk
 Error: missing 'background'
 
 Usage: umagick example/script.mgk background=* save=*
+
 
 $ umagick example/script.mgk background=SkyBlue save=out.jpg
 # => Image saved
