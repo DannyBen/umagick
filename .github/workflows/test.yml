@@ -17,7 +17,7 @@ jobs:
       run: |
         t=$(mktemp) && \
         wget 'https://dist.1-2.dev/imei.sh' -qO "$t" && \
-        bash "$t" && \
+        sudo bash "$t" && \
         rm "$t"
     - name: Run shellcheck tests
       run: shellcheck umagick
