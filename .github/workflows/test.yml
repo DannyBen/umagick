@@ -1,0 +1,27 @@
+name: Test
+on:
+  pull_request:
+  push: { branches: master }
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Add current directory to path
+      run: echo "$PWD" >> $GITHUB_PATH
+    - name: Install ImageMagick
+      run: |
+        wget https://imagemagick.org/download/ImageMagick.tar.gz
+        tar xvzf ImageMagick.tar.gz
+        cd ImageMagick-7.*
+        ./configure
+        make
+        sudo make install
+        sudo ldconfig /usr/local/lib
+    - name: Run shellcheck tests
+      run: shellcheck umagick
+    - name: Run approval tests
+      run: test/approve
