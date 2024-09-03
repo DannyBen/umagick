@@ -1,0 +1,4 @@
+# params: color save
+
+-size 400x400 xc:red
+-write tmp/out.jpg

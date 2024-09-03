@@ -1,0 +1,12 @@
+Usage:
+  umagick SCRIPT [--verbose] [ARGS...]
+  umagick (--help | -h | --version)
+
+Options:
+  --verbose, -v  Show the script before running.
+  --help, -h     Show this message.
+  --version      Show version number.
+
+Arguments:
+  SCRIPT         Path to the ImageMagick script file.
+  ARGS           key=value pairs to pass to the script.
