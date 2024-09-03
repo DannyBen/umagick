@@ -15,6 +15,17 @@ print_usage() {
   echo "  ARGS           key=value pairs to pass to the script."
 }
 
+print_script_usage() {
+  local usage_string=""
+  for param in "${params[@]}"; do
+    usage_string+="$param=* "
+  done
+
+  # Trim the trailing space
+  usage_string="${usage_string% }"
+  echo "Usage: umagick $original_script $usage_string"
+}
+
 exit_with_usage() {
   print_usage
   exit
@@ -41,17 +52,6 @@ exit_with_script_usage() {
   exit 1
 }
 
-print_script_usage() {
-  local usage_string=""
-  for param in "${params[@]}"; do
-    usage_string+="$param=* "
-  done
-
-  # Trim the trailing space
-  usage_string="${usage_string% }"
-  echo "Usage: umagick $original_script $usage_string"
-}
-
 export_vars() {
   for var in "$@"; do
     if [[ $var =~ ^([^=]+)=(.*)$ ]]; then
@@ -64,15 +64,15 @@ export_vars() {
 
 create_tmp_script() {
   tmp_script=$(mktemp)
-  envsubst < "$original_script" > "$tmp_script"
-}
-
-run_script() {
-  magick -script "$tmp_script" 
+  envsubst <"$original_script" >"$tmp_script"
 }
 
 show_script() {
   cat "$tmp_script"
+}
+
+run_script() {
+  magick -script "$tmp_script"
 }
 
 cleanup() {
@@ -82,10 +82,10 @@ cleanup() {
 parse_script_params() {
   while IFS= read -r line; do
     if [[ $line =~ ^#\ params:\ (.+) ]]; then
-      IFS=' ' read -r -a params <<< "${BASH_REMATCH[1]}"
+      IFS=' ' read -r -a params <<<"${BASH_REMATCH[1]}"
       return
     fi
-  done < "$original_script"
+  done <"$original_script"
 }
 
 verify_params_exist() {
@@ -105,7 +105,7 @@ run() {
   declare -g tmp_script
   declare -g params
   declare -g verbose
-  
+
   original_script="$1"
   shift
 
