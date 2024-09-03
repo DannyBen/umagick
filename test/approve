@@ -4,6 +4,7 @@ set -e
 cd ./test
 source approvals.bash
 tmpsave=tmp/out.jpg
+mkdir -p tmp
 
 describe "basics"
   approve "umagick"
