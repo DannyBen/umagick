@@ -1,5 +1,4 @@
-# asd
-# params: background size
+# params: background save
 
 -size 400x400 xc:$background
 
@@ -22,4 +21,4 @@
 )
 
 -layers merge +repage
--write example/out.jpg
+-write example/$save

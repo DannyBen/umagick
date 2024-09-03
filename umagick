@@ -1,16 +1,64 @@
 #!/usr/bin/env bash
 
-exit_with_usage() {
-  echo "Usage: umagick SCRIPT [ARGS...]"
+print_usage() {
+  echo "Usage:"
+  echo "  umagick SCRIPT [--verbose] [ARGS...]"
+  echo "  umagick (--help | -h | --version)"
   echo
-  echo "  SCRIPT   Path to the ImageMagick script file."
-  echo "  ARGS     key=value pairs to pass to the script."
+  echo "Options:"
+  echo "  --verbose, -v  Show the script before running."
+  echo "  --help, -h     Show this message."
+  echo "  --version      Show version number."
+  echo
+  echo "Arguments:"
+  echo "  SCRIPT         Path to the ImageMagick script file."
+  echo "  ARGS           key=value pairs to pass to the script."
+}
+
+exit_with_usage() {
+  print_usage
   exit
+}
+
+exit_with() {
+  echo "$1"
+  exit
+}
+
+exit_with_error() {
+  echo "$1"
+  exit 1
+}
+
+exit_with_script_usage() {
+  local message="$1"
+
+  if [[ -n $message ]]; then
+    echo "$message"
+    echo
+  fi
+  print_script_usage
+  exit 1
+}
+
+print_script_usage() {
+  local usage_string=""
+  for param in "${params[@]}"; do
+    usage_string+="$param=* "
+  done
+
+  # Trim the trailing space
+  usage_string="${usage_string% }"
+  echo "Usage: umagick $original_script $usage_string"
 }
 
 export_vars() {
   for var in "$@"; do
-    export "${var?}"
+    if [[ $var =~ ^([^=]+)=(.*)$ ]]; then
+      export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+    elif [[ $var == "--verbose" || $var == "-v" ]]; then
+      verbose=1
+    fi
   done
 }
 
@@ -20,27 +68,63 @@ create_tmp_script() {
 }
 
 run_script() {
-  create_tmp_script
   magick -script "$tmp_script" 
+}
+
+show_script() {
+  cat "$tmp_script"
 }
 
 cleanup() {
   rm "$tmp_script"
 }
 
+parse_script_params() {
+  while IFS= read -r line; do
+    if [[ $line =~ ^#\ params:\ (.+) ]]; then
+      IFS=' ' read -r -a params <<< "${BASH_REMATCH[1]}"
+      return
+    fi
+  done < "$original_script"
+}
+
+verify_params_exist() {
+  for param in "${params[@]}"; do
+    if [[ -z "${!param}" ]]; then
+      exit_with_script_usage "Error: missing '$param'"
+    fi
+  done
+}
+
+verify_script_exist() {
+  [[ -f $original_script ]] || exit_with_error "Error: script not found '$original_script'."
+}
+
 run() {
   declare -g original_script
   declare -g tmp_script
+  declare -g params
+  declare -g verbose
+  
   original_script="$1"
   shift
 
   export_vars "$@"
 
+  verify_script_exist
+  create_tmp_script
+  parse_script_params
+  verify_params_exist
+
+  [[ -n $verbose ]] && show_script
   run_script
   cleanup
 }
 
 main() {
+  local version="0.0.2"
+
+  [[ "$1" == "--version" ]] && exit_with "$version"
   [[ $# -lt 1 || "$1" == "--help" || "$1" == "-h" ]] && exit_with_usage
 
   run "$@"
