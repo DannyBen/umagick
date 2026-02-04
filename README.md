@@ -1,5 +1,7 @@
 # µmagick
 
+![repocard](repocard.svg)
+
 **µmagick** is a tiny ImageMagick Wrapper that lets you run ImageMagick scripts,
 with arguments.
 
