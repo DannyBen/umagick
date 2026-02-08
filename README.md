@@ -1,6 +1,6 @@
 # µmagick
 
-![repocard](repocard.svg)
+![repocard](https://repocard.dannyben.com/svg/umagick.svg)
 
 **µmagick** is a tiny ImageMagick Wrapper that lets you run ImageMagick scripts,
 with arguments.
